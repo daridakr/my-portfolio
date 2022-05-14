@@ -12,7 +12,7 @@
         {
             throw new ArgumentNullException(nameof(culture));
         }
-        return new SelectListItem { Value = culture.Name, Text = culture.Name };
+        return new SelectListItem { Value = culture.Name, Text = Localizer.GetString(culture.Name) };
     }).ToList();
     var returnUrl = string.IsNullOrWhiteSpace(Context.Request.Path) ? "~/" : $"~{Context.Request.Path.Value}{Context.Request.QueryString}";
 }
