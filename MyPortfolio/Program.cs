@@ -1,6 +1,9 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using MyPortfolio.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +22,18 @@ builder.Services.AddControllersWithViews().
     AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix).
     AddDataAnnotationsLocalization();
 
+builder.Services.Configure<RequestLocalizationOptions>(options => {
+    var supportedCultures = new List<CultureInfo>
+    {
+        new CultureInfo("en-US"),
+        new CultureInfo("be"),
+        new CultureInfo("uk")
+    };
+    options.DefaultRequestCulture = new RequestCulture("en-US");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -34,12 +49,7 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-var supportedCultures = new[] { "en-US", "be", "uk" };
-var localizationOptions = new RequestLocalizationOptions().
-    SetDefaultCulture(supportedCultures[0]).
-    AddSupportedCultures(supportedCultures).
-    AddSupportedUICultures(supportedCultures);
-app.UseRequestLocalization(localizationOptions);
+app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
 app.UseRouting();
 
